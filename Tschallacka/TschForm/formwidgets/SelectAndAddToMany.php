@@ -5,6 +5,23 @@ use Backend\Classes\FormWidgetBase;
 use ApplicationException;
 use Db;
 
+/**
+ *   The intention of this class is to allow easy insertion in to the belongstomany tables where things belong to eachother.
+ *   The following implementation example assumes you have a belongsToMany relationship named "hotels"
+ * 
+ *   You'll need to add in your model the method onFormFIELDNAMEInject(Modelclass, session value)
+ *   onFormHotelsInject($orig, $session=null) {
+	     $this->hotels()->attach($orig);
+ *   }
+ *   And in fields.yaml you can use this to implement the correct list display and which relationfield.
+ *   hotels:
+ *      buttonlabel: Add Hotels
+ *      type: selectandaddtomany
+ *      relationfield: hotels
+ *      notpossibleyet: Please save this thing if you wish to be able to add standard segments(CTRL + S)
+ *      listconfig: ~/plugins/author/someplugin/controllers/hotelcontroller/config_list.yaml
+ *
+
 class SelectAndAddToMany extends FormWidgetBase {
 	public $defaultAlias = 'selectandaddtomany';
     public function widgetDetails()
