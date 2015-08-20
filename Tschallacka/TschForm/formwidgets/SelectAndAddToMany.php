@@ -20,6 +20,7 @@ use Db;
  *      relationfield: hotels
  *      notpossibleyet: Please save this thing if you wish to be able to add standard segments(CTRL + S)
  *      listconfig: ~/plugins/author/someplugin/controllers/hotelcontroller/config_list.yaml
+ *      displayForm: ~/plugins/author/someplugin/controllers/hotelcontroller/_displayform.htm  #you could do foreach($this->hotels()->getResults() as $hotel) to loop through and display them as you wish
  *
 
 class SelectAndAddToMany extends FormWidgetBase {

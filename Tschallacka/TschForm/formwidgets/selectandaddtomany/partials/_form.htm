@@ -23,4 +23,9 @@ window['<?= $this->alias . ('handleClick');?>'] = function(that,data) {
 <a id="<?= $this->getId("popuphandler"); ?>" data-control="popup" data-size="huge" data-handler="<?= $this->alias ?>::onContentPopup" data-keyboard="true" href="#" class="btn btn-sm btn-primary oc-icon-file">
 	<?= (isset($this->config->buttonlabel) ? e(trans($this->config->buttonlabel)) : 'Add item')  ?>
 </a>
+<?php
+	if(isset($this->config->displayForm)) {
+		echo $this->makePartial($this->config->displayForm);
+	} 
+?>
 
