@@ -110,8 +110,28 @@ class SelectAndAddToMany extends FormWidgetBase {
     	//return $this->listWidgets[$this->primaryDefinition]->onRelationClickViewList();
     	return $this->onListItemClicked();
     }
-    
+	/*
+	* Autosaving/adding code if you dont want control.
     public function onListItemClicked() {
+    	/** Load configuration * /
+    	$definition = $this->config->listconfig;
+    	$listConfig = $this->makeConfig($definition, $this->requiredConfig);
+    	/** Initialise blank foreign model * /
+    	$class = $listConfig->modelClass;
+    	$model = new $class();
+    	/** Get our id by primary key * /
+    	$id = post($model->primaryKey);
+    	/** Load up the model with data * /
+    	$newmodel = $model->where($model->primaryKey,'=',$id)->get()->first();
+    	
+    	/** Add the new model ** /
+    	$this->model->{$this->fieldName}()->attach($newmodel);
+    	/** Save it ** / 
+    	$this->model->save();
+    }
+	*/
+    public function onListItemClicked() {
+		
     	/** function to call in model */
     	$func = 'on'.ucfirst($this->alias).'Inject';
     	/** Load configuration */
