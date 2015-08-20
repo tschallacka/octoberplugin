@@ -1,0 +1,26 @@
+<script type="text/javascript">
+window['<?= $this->alias . ('handleClick');?>'] = function(that,data) {
+	data = JSON.parse(data.result);
+	<?php if(isset($this->config->relationfield) && !empty($this->config->relationfield)) : ?>
+	$(that).popup({
+        handler: 'onRelationClickViewList',
+        size: 'huge',
+        extraData: {
+            'manage_id': data[data.primaryKey],
+            '_relation_field': '<?= $this->config->relationfield; ?>',
+            '_session_key': '<?= $this->sessionKey; ?>'
+        }
+    });
+    <?php elseif(isset($this->config->callbackPath) && !empty($this->config->callbackPath)):
+    	echo $this->makePartial($this->config->callbackPath);
+    endif; ?>
+    //console.log(data);
+    
+	
+}
+</script>
+    <?php //dump($this); ?>
+<a id="<?= $this->getId("popuphandler"); ?>" data-control="popup" data-size="huge" data-handler="<?= $this->alias ?>::onContentPopup" data-keyboard="true" href="#" class="btn btn-sm btn-primary oc-icon-file">
+	<?= (isset($this->config->buttonlabel) ? e(trans($this->config->buttonlabel)) : 'Add item')  ?>
+</a>
+

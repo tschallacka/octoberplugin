@@ -1,0 +1,103 @@
+<BR/>
+<div class="form-group  text-field span-left" data-field-name="<?= $name ?>" id="<?php echo $this->getId('contentcontainer') ?>" data-control="relaxedsearch">
+    <input
+        type="text"
+        name="<?= $name ?>"
+        id="<?= $this->getId() ?>"
+        value="<?= e(isset($this->formField->value) ? $this->formField->value : '') ?>"
+        class="form-control"
+        autocomplete="off"
+        <?php foreach($this->config->attributes as $key => $value) {
+    											echo ' '. $key. '="'.$value.'" ';
+												}	
+									?>/>
+    <div id="<?php echo $this->getId('dropdown') ?>-searchSuggest" class="dropdownlisttochoosefrom">
+    </div>
+</div>
+
+<style type="text/css">
+.searchhighlight {
+color:red;
+}
+.dropdownlisttochoosefrom {
+	width:100%;
+	cursor:pointer;
+	cursor:hand;
+	background-color:white;
+	max-height:300px;
+	overflow-y:scroll;
+}
+.dropdownlisttochoosefrom > div:hover {
+background-color:gray;
+color:white;
+}
+</style>
+<Script type="text/javascript">
+
+/** 
+ * TODO: clean up mess into one registration function via js file
+ */																																											
+window['<?php echo $this->getId('javascriptstorage') ?>'] = null;
+window['<?php echo $this->getId('testrun') ?>'] = function(what) {
+	//$("#<?php echo $this->getId('hidden'); ?>").val(what.innerText.trim());
+	if(window['<?php echo $this->getId('javascriptstorage') ?>'] !== null) {
+		
+		window.clearTimeout(window['<?php echo $this->getId('lasttimeout') ?>']);
+		window['<?php echo $this->getId('lasttimeout') ?>'] = window.setTimeout(function(){window['<?php echo $this->getId('fetchdata') ?>'](what);},500);
+	}
+	else { 
+		window['<?php echo $this->getId('lasttimeout') ?>'] = window.setTimeout(function(){window['<?php echo $this->getId('fetchdata') ?>'](what);},500);
+	}
+}
+window['<?php echo $this->getId('fetchdata') ?>'] = function(what) {
+	window['<?php echo $this->getId('lasttimeout') ?>'] = null;
+	
+	var textcontent = what.value.trim();
+	function addElem(obj, orig,suggest) {
+		var value = obj.text;
+		var key = obj.id;
+		var elem = document.createElement('div');
+		var tmp = value.replace(new RegExp('('+textcontent+')','gi'),'<span class="searchhighlight">$1</span>');
+		$(elem).append(tmp);
+		document.getElementById('<?php echo $this->getId('dropdown') ?>-searchSuggest').appendChild(elem);
+		$(elem).on('click',function() {
+			orig.val(key);
+			$('#<?php echo $this->getId('dropdown') ?>-searchSuggest').hide();
+		});
+	}
+	$(what).request("onSearchFieldExpand", {
+		data:{searchkey:textcontent,searchin:'<?= str_replace('\\','\\\\',$this->config->modelToSearchIn); ?>',searchfield:'<?= str_replace('\\','\\\\',$this->config->fieldNameToSearchIn); ?>'},
+		success: function(data) {
+			data = JSON.parse(data.result);
+			var $container = jQuery('#<?php echo $this->getId('dropdown') ?>-searchSuggest')
+			$container.empty();
+			var orig = jQuery('#<?php echo $this->getId() ?>');
+			for(var c=0;c<data.length;c++) {
+				addElem(data[c],orig,$container);
+			}
+			$container.show();
+		}
+	});
+}
+$(document).ready(function() {
+	$('#<?php echo $this->getId(); ?>').on('keyup',function() {
+		
+		window['<?php echo $this->getId('testrun') ?>'](this);
+	});
+	var checker = $('#<?php echo $this->getId('dropdown') ?>-searchSuggest');
+	$(document).click(function(event) {
+		if(!$(event.target).closest('#<?php echo $this->getId('contentcontainer') ?>').length) {
+			if(checker.is(":visible")) {
+				checker.hide();
+			}
+		}
+		else {
+			if(!$(event.target).closest('#<?php echo $this->getId('dropdown') ?>-searchSuggest').length) {
+				checker.show();
+			}
+		}
+	});
+});
+
+
+</Script><div style="clear:both;height:1px;display:block;margin-bottom:-20px;"></div>

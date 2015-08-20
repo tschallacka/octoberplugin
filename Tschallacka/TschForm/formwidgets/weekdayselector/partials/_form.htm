@@ -1,0 +1,162 @@
+<BR/>
+<div class="form-group  text-field span-left" data-field-name="<?= $name ?>" id="<?php echo $this->getId('contentcontainer') ?>" data-control="weekdayselector">
+    <input
+        type="text"
+        style="display:none;"
+        name="<?= $name ?>"
+        id="<?= $this->getId() ?>"
+        value="<?= e(isset($this->formField->value) ? $this->formField->value : '') ?>"
+        class="form-control"
+        autocomplete="off"
+        <?php if(isset($this->config->attributes)) {foreach($this->config->attributes as $key => $value) {
+    											echo ' '. $key. '="'.$value.'" ';
+												}	}
+									?>/>
+    <div id="<?php echo $this->getId('checkboxes') ?>-checkboxes" class="checkboxes">
+    <?php $days = ['MO','TU','WE','TH','FR','SA','SU'];
+    foreach($days as $day) {
+    	echo '<label for="'.$this->getId('checkbox'.$day).'">'.ucfirst($day).':</label><input onchange="window[\''. $this->getId('checkboxesfunction') .'\']()" type="checkbox" id="'.$this->getId('checkbox'.$day).'">';
+    }
+    ?>
+    </div>
+</div>
+
+<style type="text/css">
+
+.dropdownlisttochoosefrom {
+	width:100%;
+	cursor:pointer;
+	cursor:hand;
+	background-color:white;
+	max-height:300px;
+	overflow-y:scroll;
+}
+
+</style>
+<Script type="text/javascript">
+
+/** 
+ * TODO: clean up mess into one registration function via js file
+ */	
+var xmo = 1, xtu = 2, xwe = 4, xth = 8, xfr = 16, xsa = 32, xsu = 64;
+window['<?php echo $this->getId('compileday'); ?>'] = function(mo,tu,we,th,fr,sa,su) {
+	return ((mo ? xmo : 0)+(tu ? xtu : 0)+(we ? xwe : 0)+(th ? xth : 0)+(fr ? xfr : 0)+(sa ? xsa : 0)+(su ? xsu : 0));
+}
+/**
+ * Determines if a day is true(ugly I know... but we gotta do with what we have)
+ * @param needle the day to find
+ * @param haystack where to find it in
+ * @returns {Boolean} if the needle is true or not
+ */
+ window['<?php echo $this->getId('isDayTrue') ?>'] =function(needle,haystack) {
+    // the road we must travel
+    var current = haystack - xsu;
+    if(current < 0) {
+        current = current + xsu;
+        if(needle == xsu) {
+            return false;
+        }
+    }
+    else {
+        if(needle == xsu) {
+            return true;
+        }
+    }
+    
+    current = current - xsa;
+    if(current < 0) {
+        current = current + xsa;
+        if(needle == xsa) {
+            return false;
+        }
+    }
+    else {
+        if(needle == xsa) {
+            return true;
+        }
+    }
+    
+    current = current - xfr;
+    if(current < 0) {
+        current = current + xfr;
+        if(needle == xfr) {
+            return false;
+        }
+    }
+    else {
+        if(needle == xfr) {
+            return true;
+        }
+    }
+    
+    current = current - xth;
+    if(current < 0) {
+        current = current + xth;
+        if(needle == xth) {
+            return false;
+        }
+    }
+    else {
+        if(needle == xth) {
+            return true;
+        }
+    }
+
+    current = current - xwe;
+    if(current < 0) {
+        current = current + xwe;
+        if(needle == xwe) {
+            return false;
+        }
+    }
+    else {
+        if(needle == xwe) {
+            return true;
+        }
+    }
+       
+    current = current - xtu;
+    if(current < 0) {
+        current = current + xtu;
+        if(needle == xtu) {
+            return false;
+        }
+    }
+    else {
+        if(needle == xtu) {
+            return true;
+        }
+    }
+    if(current == 1 && needle == xmo) {
+        return true;
+    }
+    else {
+        return false;
+    }
+}
+window['<?php echo $this->getId('checkboxesfunction') ?>'] = function() {
+	var value = window['<?php echo $this->getId('compileday'); ?>'](<?php
+	foreach($days as $day) {
+		echo 'document.getElementById("'.$this->getId('checkbox'.$day).'").checked,';
+	}
+	echo '""';
+	?>);
+	document.getElementById('<?php echo $this->getId(); ?>').value = value;
+	 
+ }
+
+$(document).ready(function() {
+		var $checkagainst = parseInt(document.getElementById('<?php echo $this->getId(); ?>').value);
+		
+		if(!isNaN($checkagainst)) { 
+			<?php
+				$days = array_reverse($days); 
+				foreach($days as $day) {
+					echo 'document.getElementById("'.$this->getId('checkbox'.$day).'").checked = window[\''. $this->getId('isDayTrue') .'\'](x'.strtolower($day).',$checkagainst);';
+				}
+				?>
+		}
+});
+
+
+</Script><div style="clear:both;height:1px;display:block;margin-bottom:-20px;"></div>

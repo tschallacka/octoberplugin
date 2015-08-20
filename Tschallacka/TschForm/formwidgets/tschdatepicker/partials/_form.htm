@@ -1,0 +1,31 @@
+<BR/>
+
+<div class="form-group  text-field span-left" data-field-name="<?= $name ?>" id="<?php echo $this->getId('contentcontainer') ?>" data-control="weekdayselector">
+    <input
+        type="text"
+        name="<?= $name ?>"
+        id="<?= $this->getId() ?>"
+        value="<?= e(isset($this->formField->value) ? $this->formField->value : '') ?>"
+        class="form-control"
+        autocomplete="off"
+        <?php if(isset($this->config->attributes)) {foreach($this->config->attributes as $key => $value) {
+    											echo ' '. $key. '="'.$value.'" ';
+												}	}
+									?>/>
+</div>
+<style type="text/css">
+
+</style>
+<Script type="text/javascript">
+
+window['<?php echo $this->getId('compileday'); ?>'] = function(mo,tu,we,th,fr,sa,su) {
+	return ((mo ? xmo : 0)+(tu ? xtu : 0)+(we ? xwe : 0)+(th ? xth : 0)+(fr ? xfr : 0)+(sa ? xsa : 0)+(su ? xsu : 0));
+}
+
+$(document).ready(function() {
+		TschTools.makeDatePickerField(document.getElementById('<?php echo $this->getId(); ?>'));
+		var $checkagainst = parseInt(document.getElementById('<?php echo $this->getId(); ?>').value);		
+});
+
+
+</Script><div style="clear:both;height:1px;display:block;margin-bottom:-20px;"></div>
