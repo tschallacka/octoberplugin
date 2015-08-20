@@ -43,10 +43,10 @@ class Plugin extends PluginBase
     public function pluginDetails()
     {
         return [
-            'name'        => 'EEB',
-            'description' => 'Tsch Reizen EEB',
-            'author'      => 'Michael Dibbets',
-            'icon'        => 'icon-play-circle-o',
+            'name'        => 'Tschallacka\'s Forms',
+            'description' => 'Tschallacka\'s form elements to make your plugin development a bit easier :-)',
+            'author'      => 'Tschallacka',
+            'icon'        => 'icon-puzzle-piece',
         ];
     }
 
