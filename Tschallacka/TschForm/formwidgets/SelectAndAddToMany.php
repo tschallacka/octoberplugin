@@ -22,6 +22,15 @@ use Db;
  *      listconfig: ~/plugins/author/someplugin/controllers/hotelcontroller/config_list.yaml
  *      displayForm: ~/plugins/author/someplugin/controllers/hotelcontroller/_displayform.htm  #you could do foreach($this->hotels()->getResults() as $hotel) to loop through and display them as you wish
  *
+ Displayform example
+	<?php $hotels = $this->model->hotels()->getResults();
+	foreach($hotels as $hotel) {
+		
+		echo $hotel->hotel_name;
+		echo $this->renderDeleteButton($hotel); 
+	}
+	?>
+*/
 
 class SelectAndAddToMany extends FormWidgetBase {
 	public $defaultAlias = 'selectandaddtomany';
@@ -111,6 +120,25 @@ class SelectAndAddToMany extends FormWidgetBase {
     	//return $this->listWidgets[$this->primaryDefinition]->onRelationClickViewList();
     	return $this->onListItemClicked();
     }
+	
+	public function renderDeleteButton($id, $label = 'Remove',$cssclass = '"btn btn-sm btn-primary oc-icon-trash') {
+    	if(is_numeric($id)) {
+    		return '<button data-request="onItemRemove" data-request-data="id:'.$id.'" class="'.$cssclass.'">
+				'.$label.'
+			</button>';
+    	}
+    	else  {
+    		return '<button data-request="onItemRemove" data-request-data="id:'.$id->{$id->primaryKey}.'" class="'.$cssclass.'">
+				'.$label.'
+			</button>';
+    	}
+    	
+    }
+    public function onItemRemove() {
+    	$id = post('id');
+    	$this->model->{$this->fieldName}()->detach($id);
+    }
+	
 	/*
 	* Autosaving/adding code if you dont want control.
     public function onListItemClicked() {
