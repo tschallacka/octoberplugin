@@ -17,7 +17,11 @@ use Db;
  *   hotels:
  *      buttonlabel: Add Hotels
  *      type: selectandaddtomany
- *      relationfield: hotels
+ *      relationfields: 
+             hotel_name:
+                 description: exitcontrol.countrymanager::lang.regionmanager.name
+             hotel_url:
+                 description: exitcontrol.countrymanager::lang.regionmanager.url
  *      notpossibleyet: Please save this thing if you wish to be able to add standard segments(CTRL + S)
  *      listconfig: ~/plugins/author/someplugin/controllers/hotelcontroller/config_list.yaml
  *      displayForm: ~/plugins/author/someplugin/controllers/hotelcontroller/_displayform.htm  #you could do foreach($this->hotels()->getResults() as $hotel) to loop through and display them as you wish
@@ -137,6 +141,7 @@ class SelectAndAddToMany extends FormWidgetBase {
     public function onItemRemove() {
     	$id = post('id');
     	$this->model->{$this->fieldName}()->detach($id);
+		return $this->formRefreshRender(); 
     }
 	
 	/*
@@ -161,8 +166,6 @@ class SelectAndAddToMany extends FormWidgetBase {
 	*/
     public function onListItemClicked() {
 		
-    	/** function to call in model */
-    	$func = 'on'.ucfirst($this->alias).'Inject';
     	/** Load configuration */
     	$definition = $this->config->listconfig;
     	$listConfig = $this->makeConfig($definition, $this->requiredConfig);
@@ -173,16 +176,12 @@ class SelectAndAddToMany extends FormWidgetBase {
     	$id = post($model->primaryKey);
     	/** Load up the model with data */
     	$newmodel = $model->where($model->primaryKey,'=',$id)->get()->first();
-    	/** Feed it to this instance(Model belonging to the calling controller */
-    	$ret = $this->model->{$func}($newmodel,$this->sessionKey); 
-    	/** Feed back primary key to the json parser */
-    	if(isset($ret) && !empty($ret) && $ret !== null) {
-    		$arr = $ret->toArray();
-    		$arr['primaryKey']=$newmodel->primaryKey;
-    		return json_encode($arr); 
-    	}
-    	else {
-    		return json_encode(['yup'=>'did']);
+    	
+    	/** Add the new model **/
+    	$this->model->{$this->fieldName}()->attach($newmodel);
+    	/** Save it **/ 
+    	$this->model->save();
+    	return $this->formRefreshRender();
     	}
     }
     public function makeList()
@@ -378,15 +377,20 @@ class SelectAndAddToMany extends FormWidgetBase {
 		return '<div style="width:100%;height:100%;overflow:scroll;padding:10px;">'.$value.'</div>';
 		//return $this->listWidgets[$definition];
 	}
+	public function formRefreshRender() {
+		$this->prepareVars();
+		if(!empty($this->model->{$this->model->primaryKey})) {
+			return $this->makePartial('form');
+		}
+		else {
+			return $this->makePartial('nolinkingpossibleyet');
+		}
+	}
     public function render() {
     	$this->addJs('/modules/system/assets/js/framework.extras.js');
-    	$this->prepareVars();
-    	if(!empty($this->model->{$this->model->primaryKey})) {
-    		return $this->makePartial('form');
-    	}
-    	else {
-    		return $this->makePartial('nolinkingpossibleyet');
-    	}
+		$this->addJs('/plugins/ExitTravel/eeb/formwidgets/selectandaddtomany/assets/js/Sortable.js');
+    	$this->addCss('/plugins/ExitTravel/eeb/formwidgets/selectandaddtomany/assets/css/bootstrap-list-group.css');
+    	return $this->formRefreshRender();
     	
     }
 }

@@ -1,0 +1,66 @@
+<ul class="list-group sortable" id="<?= $this->getId('listgroup'); ?>">
+<?php $items = $this->model->{$this->fieldName}()->getResults();
+	$fieldnames = [];
+	foreach($this->config->relationfields as $key => $value) {
+		$fieldnames[] = trim($key);
+	}
+	echo '<li class="list-group-item sorteritem" onclick="window[\''. $this->getId('sortthis') .'\']();"><ul class="subitemholder">';
+	foreach($fieldnames as $name) {
+		echo '<li class="subitem">';
+		if(isset($this->config->relationfields[$name]['description'])) {
+			echo e(trans($this->config->relationfields[$name]['description']));
+		}
+		else {
+			echo ucfirst(str_replace('_',' ',$name));
+		}
+		
+		echo '</li>';
+	}
+	echo "</ul></li>";
+	foreach($items as $item) {
+		echo '<li class="list-group-item contentitem">';
+		echo '<span style="float:right;">';
+		echo $this->renderDeleteButton($item);
+		echo '</span>';
+		echo '<ul class="subitemholder">';
+		foreach($fieldnames as $name) {
+			if(is_string($item->{$name}) && filter_var($item->{$name}, FILTER_VALIDATE_URL)) {
+				echo '<li class="subitem"><a href="'.$item->{$name}.'" target="_blank">'.substr($item->{$name},0,35).'...</a></li>';	
+			}
+			else {
+				echo '<li class="subitem">'.$item->{$name}.'</li>';
+			}
+		}
+		echo '</ul></li>';
+		
+	}
+	//dump($this);
+?>
+</ul>
+<script type="text/javascript">
+function relationdisplaysort(what) {
+		var elemparent = $(what);
+		elemparent.find('.contentitem').sortElements(function(a, b){
+		    return $(a).text() > $(b).text() ? 1 : -1;
+		});							
+}
+function relationdisplayreversesort(what) {
+	var elemparent = $(what);
+	elemparent.find('.contentitem').sortElements(function(a, b){
+	    return $(a).text() > $(b).text() ? -1 : 1;
+	});		
+}
+window['<?= $this->getId('done'); ?>'] = false;
+window['<?= $this->getId('sortthis'); ?>'] = function() {
+	window['<?= $this->getId('done'); ?>'] = !window['<?= $this->getId('done'); ?>'];
+	if(window['<?= $this->getId('done'); ?>']) {
+		relationdisplayreversesort('#<?= $this->getId('listgroup'); ?>')
+	}
+	else {
+		relationdisplaysort('#<?= $this->getId('listgroup'); ?>');
+	}
+};
+$(document).ready(function() {
+	relationdisplaysort('#<?= $this->getId('listgroup'); ?>');
+});
+</script>

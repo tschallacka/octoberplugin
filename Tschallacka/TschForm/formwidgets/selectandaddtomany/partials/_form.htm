@@ -1,19 +1,11 @@
 <script type="text/javascript">
 window['<?= $this->alias . ('handleClick');?>'] = function(that,data) {
-	data = JSON.parse(data.result);
-	<?php if(isset($this->config->relationfield) && !empty($this->config->relationfield)) : ?>
-	$(that).popup({
-        handler: 'onRelationClickViewList',
-        size: 'huge',
-        extraData: {
-            'manage_id': data[data.primaryKey],
-            '_relation_field': '<?= $this->config->relationfield; ?>',
-            '_session_key': '<?= $this->sessionKey; ?>'
-        }
-    });
-    <?php elseif(isset($this->config->callbackPath) && !empty($this->config->callbackPath)):
-    	echo $this->makePartial($this->config->callbackPath);
-    endif; ?>
+	console.log(data.result);
+	if(!(typeof data.result === 'undefined')) { 
+			$('#Form-field-RegionModel-<?= $this->fieldName ?>-group').html(data.result);
+			window['<?= $this->getId('done') ?>'] = !window['<?= $this->getId('done') ?>'];
+			window['<?= $this->getId('sortthis') ?>']()	
+	}
     //console.log(data);
     
 	
@@ -27,5 +19,9 @@ window['<?= $this->alias . ('handleClick');?>'] = function(that,data) {
 	if(isset($this->config->displayForm)) {
 		echo $this->makePartial($this->config->displayForm);
 	} 
+	else {
+		echo $this->makePartial('relationDisplay');
+	}
+	
 ?>
 
