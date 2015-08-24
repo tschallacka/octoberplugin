@@ -124,15 +124,17 @@ class SelectAndAddToMany extends FormWidgetBase {
     	//return $this->listWidgets[$this->primaryDefinition]->onRelationClickViewList();
     	return $this->onListItemClicked();
     }
-	
-	public function renderDeleteButton($id, $label = 'Remove',$cssclass = '"btn btn-sm btn-primary oc-icon-trash') {
+	public function getFormFieldOverwriteAccessKey() {
+		return 'Form-field-'. $this->formField->arrayName .'-'. $this->formField->fieldName .'-group';
+	}
+	public function renderDeleteButton($id, $label = 'Remove',$cssclass = 'btn btn-sm btn-primary oc-icon-trash') {
     	if(is_numeric($id)) {
-    		return '<button data-request="'.$this->config->alias.'::onItemRemove" data-request-data="id:'.$id.'" class="'.$cssclass.'">
+    		return '<button data-request="'.$this->config->alias.'::onItemRemove" data-request-data="id:'.$id.'" class="'.$cssclass.'" data-request-success="$(\'#'.getFormFieldOverwriteAccessKey().'\').html(data.result);window[\''. $this->getId('done') .'\'] = !window[\''. $this->getId('done') .'\'];window[\''. $this->getId('sortthis') .'\']()">
 				'.$label.'
 			</button>';
     	}
     	else  {
-    		return '<button data-request="'.$this->config->alias.'::onItemRemove" data-request-data="id:'.$id->{$id->primaryKey}.'" class="'.$cssclass.'">
+    		return '<button data-request="'.$this->config->alias.'::onItemRemove" data-request-data="id:'.$id->{$id->primaryKey}.'" class="'.$cssclass.'" data-request-success="$(\'#'.getFormFieldOverwriteAccessKey().'\').html(data.result);window[\''. $this->getId('done') .'\'] = !window[\''. $this->getId('done') .'\'];window[\''. $this->getId('sortthis') .'\']()">
 				'.$label.'
 			</button>';
     	}

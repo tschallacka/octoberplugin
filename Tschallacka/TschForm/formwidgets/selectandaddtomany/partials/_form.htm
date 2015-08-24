@@ -1,14 +1,10 @@
 <script type="text/javascript">
 window['<?= $this->alias . ('handleClick');?>'] = function(that,data) {
-	console.log(data.result);
 	if(!(typeof data.result === 'undefined')) { 
-			$('#Form-field-RegionModel-<?= $this->fieldName ?>-group').html(data.result);
+			$('#<?= $this->getFormFieldOverwriteAccessKey() ?>').html(data.result);
 			window['<?= $this->getId('done') ?>'] = !window['<?= $this->getId('done') ?>'];
 			window['<?= $this->getId('sortthis') ?>']()	
 	}
-    //console.log(data);
-    
-	
 }
 </script>
     <?php //dump($this); ?>
