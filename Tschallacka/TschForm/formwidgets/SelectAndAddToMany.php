@@ -127,12 +127,12 @@ class SelectAndAddToMany extends FormWidgetBase {
 	
 	public function renderDeleteButton($id, $label = 'Remove',$cssclass = '"btn btn-sm btn-primary oc-icon-trash') {
     	if(is_numeric($id)) {
-    		return '<button data-request="onItemRemove" data-request-data="id:'.$id.'" class="'.$cssclass.'">
+    		return '<button data-request="'.$this->config->alias.'::onItemRemove" data-request-data="id:'.$id.'" class="'.$cssclass.'">
 				'.$label.'
 			</button>';
     	}
     	else  {
-    		return '<button data-request="onItemRemove" data-request-data="id:'.$id->{$id->primaryKey}.'" class="'.$cssclass.'">
+    		return '<button data-request="'.$this->config->alias.'::onItemRemove" data-request-data="id:'.$id->{$id->primaryKey}.'" class="'.$cssclass.'">
 				'.$label.'
 			</button>';
     	}
