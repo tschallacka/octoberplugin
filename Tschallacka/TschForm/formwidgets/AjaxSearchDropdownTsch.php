@@ -4,6 +4,21 @@ namespace Tschallacka\TschForm\FormWidgets;
 use Backend\Classes\FormWidgetBase;
 use Db;
 
+/**
+ * Usage
+   hotel_city:
+        label: searchfield
+        type: relaxedsearch
+        modelToSearchIn: ExitControl\CountryManager\Models\CityModel
+        fieldToSearchIn: cityname
+        extrafields:
+            - field:   #this is an array indication, add as many - field: elements as you want 
+                valueVia: city_state         # the relation within the relation
+                isRelation: true             # set this to be a relation within the relation
+                relatedValueFrom: state_code # which field to get the data from
+ * @author Tschallacka
+ *
+ */
 class AjaxSearchDropdownTsch extends FormWidgetBase {
 	public $defaultAlias = 'relaxedsearch';
     public function widgetDetails()
@@ -23,21 +38,27 @@ class AjaxSearchDropdownTsch extends FormWidgetBase {
     		if($loc = strpos($searchkey,'(')) {
     			$searchkey = substr($searchkey,0,$loc);
     		}
-    		$searchin = $this->config->modelToSearchIn;
-    		$searchfield = $this->config->fieldToSearchIn;
+    		$searchin = $this->model;
+    		$model = $this->model;
+    		if(isset($this->config->modelToSearchIn)) {
+    			$searchin = $this->config->modelToSearchIn;
+    			$model = new $searchin();
+    		}
+    		$searchfield = $this->formField->fieldName;
+    		if(isset($this->config->fieldToSearchIn)) {
+    			$searchfield = $this->config->fieldToSearchIn;
+    		}
 	    	//$searchin = ''.post('searchin');
 	    	if(!empty($searchin)) {
 	    		/** Instantiate the model capt'n **/
-		    	$model = new $searchin();
+		    	
 		    	$key = isset($this->config->keyField) ? $this->config->keyField : $model->primaryKey;
 		    	$ret = [];
+		    	
 		    	/** Search in this, but first make it safe(SQL server safe) **/
-		    	//$searchfield = str_replace(']','',''.post('searchfield'));
-		    	//$list = Db::connection($model->connection)->select('select tmp.field from (SELECT lower(['.$searchfield.']) as [field] FROM ['.$model->table.']) tmp WHERE field LIKE ? GROUP BY field',[strtolower(post('searchkey')).'%']);
 		    	$list = $model->where($searchfield,'like',strtolower($searchkey).'%')->get();
-		    	//$list = Db::connection($model->connection)->select('select ['.$searchfield.'] as field ,['.$key.'] as accesskey FROM ['.$model->table.'] WHERE ['.$searchfield.'] LIKE ?',[strtolower(post('searchkey')).'%']);
-		    	$model = null;		
-		    	//		$model->table)->(Db::raw('lower([]) as [field] '));
+		    	$model = null;
+		    			
 		    	/** Return the results **/
 		    	foreach($list as $item) {
 		    		$ret[] = ['id' => ucfirst($item->{$key}),
