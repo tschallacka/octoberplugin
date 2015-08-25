@@ -1,20 +1,26 @@
 <BR/>
 <div class="form-group  text-field span-left" data-field-name="<?= $name ?>" id="<?php echo $this->getId('contentcontainer') ?>" data-control="relaxedsearch">
-    <input
+	<input type="hidden" 
+		id="<?= $this->getId() ?>"
+		name="<?= $name ?>"
+		value="<?= e(isset($this->formField->value) ? $this->formField->value : '') ?>">
+		
+	<input
         type="text"
-        name="<?= $name ?>"
-        id="<?= $this->getId() ?>"
-        value="<?= e(isset($this->formField->value) ? $this->formField->value : '') ?>"
+        <?php if(isset($this->config->disabled) && $this->config->disabled == 'true') echo 'disabled="disabled"'; ?>
+        id="<?= $this->getId('publicdisplaysearch') ?>"
+        value="<?= e(isset($translatedvalue) ? $translatedvalue : '') ?>"
         class="form-control"
         autocomplete="off"
-        <?php foreach($this->config->attributes as $key => $value) {
-    											echo ' '. $key. '="'.$value.'" ';
-												}	
+        <?php if(isset($this->config->attributes)) {
+        			foreach($this->config->attributes as $key => $value) {
+        				echo ' '. $key. '="'.$value.'" ';
+					}
+        		}	
 									?>/>
     <div id="<?php echo $this->getId('dropdown') ?>-searchSuggest" class="dropdownlisttochoosefrom">
     </div>
 </div>
-
 <style type="text/css">
 .searchhighlight {
 color:red;
@@ -32,6 +38,7 @@ background-color:gray;
 color:white;
 }
 </style>
+
 <Script type="text/javascript">
 
 /** 
@@ -61,14 +68,16 @@ window['<?php echo $this->getId('fetchdata') ?>'] = function(what) {
 		$(elem).append(tmp);
 		document.getElementById('<?php echo $this->getId('dropdown') ?>-searchSuggest').appendChild(elem);
 		$(elem).on('click',function() {
+			$('#<?= $this->getId('publicdisplaysearch') ?>').val(value);
 			orig.val(key);
+			//orig.val(key);
 			$('#<?php echo $this->getId('dropdown') ?>-searchSuggest').hide();
 		});
 	}
-	$(what).request("onSearchFieldExpand", {
-		data:{searchkey:textcontent,searchin:'<?= str_replace('\\','\\\\',$this->config->modelToSearchIn); ?>',searchfield:'<?= str_replace('\\','\\\\',$this->config->fieldNameToSearchIn); ?>'},
+	$(what).request("<?= $this->alias ?>::onSearchFieldExpand", {
+		data:{searchkey:textcontent,/*searchin:'<?= str_replace('\\','\\\\',(isset($this->config->modelToSearchIn) ? $this->config->modelToSearchIn :"")); ?>',searchfield:'<?= str_replace('\\','\\\\',(isset($this->config->fieldNameToSearchIn)?$this->config->fieldNameToSearchIn:"")); ?>'*/},
 		success: function(data) {
-			data = JSON.parse(data.result);
+			data = JSON.parse(data.result);console.log(data);
 			var $container = jQuery('#<?php echo $this->getId('dropdown') ?>-searchSuggest')
 			$container.empty();
 			var orig = jQuery('#<?php echo $this->getId() ?>');
@@ -80,7 +89,7 @@ window['<?php echo $this->getId('fetchdata') ?>'] = function(what) {
 	});
 }
 $(document).ready(function() {
-	$('#<?php echo $this->getId(); ?>').on('keyup',function() {
+	$('#<?php echo $this->getId('publicdisplaysearch'); ?>').on('keyup',function() {
 		
 		window['<?php echo $this->getId('testrun') ?>'](this);
 	});
